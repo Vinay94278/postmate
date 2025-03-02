@@ -1,0 +1,16 @@
+phidata
+python-dotenv
+packaging
+duckduckgo-search
+fastapi
+uvicorn
+groq
+newspaper4k
+lxml_html_clean
+arxiv
+wikipedia
+googlesearch-python
+pypdf
+pycountry
+flask
+flask-cors

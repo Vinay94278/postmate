@@ -22,3 +22,63 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.prose {
+  color: #1f2937; /* gray-800 */
+}
+
+.prose a {
+  color: #3b82f6; /* blue-500 */
+  text-decoration: underline;
+}
+
+.whitespace-pre-wrap {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.lead-snug {
+  line-height: 1.3;
+}
+
+/* LinkedIn Style */
+.linkedin-prose {
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.linkedin-prose .hashtag {
+  color: #0077b5;
+  font-weight: 600;
+}
+
+/* Twitter/X Style */
+.twitter-prose {
+  font-family: 'TwitterChirp', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.twitter-prose .hashtag {
+  color: #1d9bf0;
+  font-weight: 500;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
