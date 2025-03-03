@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📢 Postmate - AI-Powered Social Media Assistant
 
-## Getting Started
+Postmate is a free AI-powered content creation tool that helps you generate engaging social media posts for **LinkedIn** and **X (Twitter)** in seconds. Built using **Next.js**, **Flask**, **Firebase**, and **AI models from Groq & Agno**, Postmate saves time while optimizing your content for engagement. 🚀
 
-First, run the development server:
+---
 
+## ✨ Features
+
+- **AI-Powered Post Generation** 🧠 - Generates high-quality LinkedIn and X posts.
+- **Platform-Specific Optimization** 📈 - Ensures content is engaging and relevant.
+- **User Authentication with Firebase** 🔐 - Secure login and profile setup.
+- **Dynamic API Key Management** 🔑 - Securely store and use Groq & Agno AI keys.
+- **Intuitive UI & Animations** 🎨 - Modern interface with smooth interactions.
+- **Responsive Design** 📱 - Works seamlessly on desktop, tablet, and mobile.
+
+---
+
+## 🏗️ Tech Stack
+
+### Frontend:
+- **Next.js** (React Framework)
+- **Tailwind CSS** (Styling)
+- **Framer Motion** (Animations)
+
+### Backend:
+- **Flask** (Python API framework)
+- **Firebase Authentication** (User login/signup)
+- **SQLite** (User API key storage)
+
+### AI Models:
+- **Groq API** (Content generation)
+- **Agno AI** (Research & Insights)
+
+---
+
+## 🚀 Getting Started
+
+### 1️⃣ Clone the Repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/Vinay94278/Postmate.git
+cd Postmate
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2️⃣ Backend Setup
+#### Install Dependencies
+```bash
+cd backend
+pip install -r requirements.txt
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### Run the Flask Backend
+```bash
+python app.py
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3️⃣ Frontend Setup
+#### Install Dependencies
+```bash
+cd ../frontend
+npm install
+```
 
-## Learn More
+#### Start the Frontend
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Now, visit `http://localhost:3000` in your browser! 🎉
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📸 Screenshots
 
-## Deploy on Vercel
+| Landing Page | Profile Setup | Post Generation |
+|-------------|--------------|----------------|
+| ![Landing](https://via.placeholder.com/300) | ![Profile](https://via.placeholder.com/300) | ![Generated Post](https://via.placeholder.com/300) |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 👨‍💻 Author
+
+Developed by **[Vinay Adatiya](https://www.linkedin.com/in/vinay-adatiya/)**  
+🔗 **GitHub:** [Vinay94278](https://github.com/Vinay94278)  
+
+Special thanks to my AI buddies: **ChatGPT, Claude, and DeepSeek** for their late-night debugging support. 🤖☕
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License**. Feel free to use and improve it!
+
+---
+
+Enjoy using Postmate? **Star** ⭐ this repo on GitHub & share it with your network! 🚀
