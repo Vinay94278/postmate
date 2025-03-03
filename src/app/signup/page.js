@@ -32,12 +32,12 @@ export default function Signup() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">Sign Up</h2>
+        <h2 className="text-2xl font-semibold text-center text-black mb-4">Sign Up</h2>
         {error && <p className="text-red-500 text-center">{error}</p>}
         <form onSubmit={handleSignup} className="space-y-4">
           <input
             type="email"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+            className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-green-500"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -46,7 +46,7 @@ export default function Signup() {
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+              className="w-full p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-green-500"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

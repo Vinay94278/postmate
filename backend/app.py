@@ -10,8 +10,6 @@ from phi.tools.newspaper4k import Newspaper4k
 from phi.tools.wikipedia import WikipediaTools
 from phi.tools.googlesearch import GoogleSearch
 from phi.tools.arxiv_toolkit import ArxivToolkit
-
-# from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import auth, credentials
 import requests

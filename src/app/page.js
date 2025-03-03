@@ -1,255 +1,339 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { LinkedInPreview, XPreview } from '@/components/PostPreviews';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm'
-import { auth } from "@/firebase"; // Firebase auth
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
-import { parseAgentContent } from '@/utils/parseAgentContent';
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { FaLinkedin, FaTwitter, FaArrowRight, FaRocket, FaMagic, FaChartLine } from "react-icons/fa";
 
-export default function Home() {
-  const [loading, setLoading] = useState(false);
-  const [linkedinUsername, setLinkedinUsername] = useState('');
-  const [xUsername, setXUsername] = useState('');
-  const [topic, setTopic] = useState('');
-  const [results, setResults] = useState(null);
-  const [activeTab, setActiveTab] = useState('form'); // 'form', 'research', or 'preview'
-  const [user, setUser] = useState(null);
-  const [apiKeys, setApiKeys] = useState({ groq_api_key: "", phi_agno_api_key: "" });
-
+export default function LandingPage() {
   const router = useRouter();
-  // **Check if user is logged in**
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
-        fetchAPIKeys(user.uid);
-      } else {
-        router.push("/login"); // Redirect to login if not authenticated
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // **Fetch API Keys from Backend**
-  const fetchAPIKeys = async (userId) => {
-    try {
-      const response = await axios.get(`http://localhost:5000/profile?user_id=${userId}`);
-  
-      if (response.status === 200) {
-        setApiKeys(response.data);
-  
-        // ✅ Redirect only if API keys exist
-        if (response.data.groq_api_key && response.data.phi_agno_api_key) {
-          console.log("API Keys loaded successfully.");
-        } else {
-          console.warn("API keys are missing. Redirecting to profile page.");
-          router.push("/profile");
-        }
-      } else {
-        console.error("User API keys not found");
-      }
-    } catch (error) {
-      console.error("Failed to fetch API keys", error);
-    }
-  };
-  
-  // **Handle Content Generation**
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-  
-    if (!user) {
-      alert("You must be logged in to generate content.");
-      return;
-    }
-  
-    if (!apiKeys.groq_api_key || !apiKeys.phi_agno_api_key) {
-      alert("Please enter API keys in your profile first.");
+  useEffect(() => {
+    // Check if the user is already authenticated and redirect accordingly
+    const user = localStorage.getItem("user");
+    if (user) {
       router.push("/profile");
-      return;
     }
-  
-    try {
-      const response = await axios.post("http://localhost:5000/generate", {
-        user_id: user.uid,
-        topic,
-      });
-  
-      if (!response.data) throw new Error("Failed to generate posts");
-      setResults(response.data);
-      setActiveTab("preview");
-    } catch (error) {
-      console.error("Error:", error.message);
-      alert(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
+
+    // Simulate loading for smoother animations
+    const timer = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, [router]);
+
+  // Sample post previews
+  const samplePosts = [
+    {
+      platform: "linkedin",
+      content: "Excited to share that our team has been leveraging AI to streamline our content creation process, saving us 15+ hours per week! The quality has improved and engagement is up 37%. Check out Postmate if you're looking to level up your social media game. #AITools #ContentCreation #ProductivityHack",
+      stats: {
+        likes: 234,
+        comments: 42,
+        shares: 18
+      }
+    },
+    {
+      platform: "twitter",
+      content: "Finally found an AI tool that actually understands my brand voice! @PostmateAI helped me schedule an entire month of posts in under an hour. And it's completely FREE! 🤯",
+      stats: {
+        likes: 189,
+        retweets: 56,
+        views: "12.4K"
+      }
     }
-  };
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-white">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+          className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full"
+        />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="container mx-auto px-4 py-8 max-w-5xl">
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Postmate AI
-          </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Generate engaging social media content for LinkedIn and X (Twitter) with just a few clicks.
-            Powered by AI research and content creation.
-          </p>
+    <div className="min-h-screen bg-white text-gray-800 overflow-hidden">
+      {/* Hero Section */}
+      <header className="relative pt-20 pb-32 px-6 bg-gradient-to-r from-blue-50 to-indigo-50">
+        {/* Background Elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <motion.div
+            className="absolute top-20 right-20 w-64 h-64 rounded-full bg-blue-400 opacity-5"
+            animate={{
+              scale: [1, 1.2, 1],
+              x: [0, 20, 0],
+              y: [0, -30, 0]
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 15,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute top-40 left-10 w-96 h-96 rounded-full bg-indigo-500 opacity-5"
+            animate={{
+              scale: [1, 1.3, 1],
+              x: [0, -20, 0],
+              y: [0, 40, 0]
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 18,
+              ease: "easeInOut"
+            }}
+          />
         </div>
 
-        {/* Main Tabs */}
-        <div className="mb-6 bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
-          <div className="flex border-b border-gray-200">
-            <button
-              onClick={() => setActiveTab('form')}
-              className={`px-6 py-3 font-medium text-sm transition-colors ${activeTab === 'form'
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-600 hover:text-gray-900'
-                }`}
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+            {/* Text Content */}
+            <motion.div
+              className="flex-1 text-center lg:text-left"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
             >
-              Input
-            </button>
-            <button
-              onClick={() => setActiveTab('research')}
-              className={`px-6 py-3 font-medium text-sm transition-colors ${activeTab === 'research'
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-600 hover:text-gray-900'
-                }`}
-              disabled={!results}
-            >
-              Research
-            </button>
-            <button
-              onClick={() => setActiveTab('preview')}
-              className={`px-6 py-3 font-medium text-sm transition-colors ${activeTab === 'preview'
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-600 hover:text-gray-900'
-                }`}
-              disabled={!results}
-            >
-              Preview
-            </button>
-          </div>
-
-          {/* Tab Content */}
-          <div className="p-6">
-            {activeTab === 'form' && (
-              <form onSubmit={handleSubmit}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      LinkedIn Username
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-900 placeholder-gray-500"
-                      placeholder="janedoe"
-                      value={linkedinUsername}
-                      onChange={(e) => setLinkedinUsername(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      X (Twitter) Handle
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-900 placeholder-gray-500"
-                      placeholder="@janedoe"
-                      value={xUsername}
-                      onChange={(e) => setXUsername(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Post Topic
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-900 placeholder-gray-500"
-                    placeholder="Enter a topic (e.g., Generative AI advancements in 2025)"
-                    value={topic}
-                    onChange={(e) => setTopic(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center"
-                  disabled={loading}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.8 }}
+                className="inline-block px-4 py-1 mb-6 bg-blue-600 text-white rounded-full text-sm font-medium"
+              >
+                🚀 100% Free AI-powered social media assistant
+              </motion.div>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight text-gray-900">
+                Create <span className="text-blue-600">engaging</span> posts in seconds
+              </h1>
+              <p className="text-xl text-gray-600 mb-8 max-w-xl mx-auto lg:mx-0">
+                Postmate is a completely <span className="font-bold">free</span> agentic AI tool that helps you build your LinkedIn and X daily content to engage your audience. No paywalls, no limits.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <motion.button
+                  className="px-8 py-4 bg-blue-600 text-white rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  {loading && (
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                  )}
-                  {loading ? 'Generating...' : 'Create Posts'}
-                </button>
-              </form>
-            )}
-
-            {activeTab === 'research' && results && (
-              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                <h2 className="text-lg font-semibold mb-2 text-gray-800">Research Summary</h2>
-                <div className="prose max-w-none">
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      strong: ({ node, ...props }) => (
-                        <strong className="font-semibold text-gray-900" {...props} />
-                      ),
-                      em: ({ node, ...props }) => (
-                        <em className="italic text-gray-700" {...props} />
-                      ),
-                      a: ({ node, ...props }) => (
-                        <a className="text-blue-600 hover:underline" {...props} />
-                      ),
-                      p: ({ node, ...props }) => (
-                        <p className="mb-4 leading-relaxed" {...props} />
-                      )
-                    }}
-                  >
-                    {results.research_summary}
-                  </ReactMarkdown>
-                </div>
+                  <Link href="/login" className="flex items-center">
+                    Get Started Free
+                    <FaArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </motion.button>
+                <motion.button
+                  className="px-8 py-4 border-2 border-blue-600 text-blue-600 rounded-full font-bold text-lg hover:bg-blue-50 transition-all"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Link href="https://www.linkedin.com/in/vinay-adatiya">
+                    Watch Demo
+                  </Link>
+                </motion.button>
               </div>
-            )}
-
-            {activeTab === 'preview' && results && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <h2 className="text-lg font-semibold text-gray-800 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#0077b5" className="w-5 h-5 mr-2">
-                      <path d="M4.75 3h14.5c.966 0 1.75.784 1.75 1.75v14.5A1.75 1.75 0 0 1 19.25 21H4.75A1.75 1.75 0 0 1 3 19.25V4.75C3 3.784 3.784 3 4.75 3Z" />
-                      <path d="M8.447 9.105c0-1.005-.815-1.82-1.82-1.82s-1.82.815-1.82 1.82c0 1.005.815 1.82 1.82 1.82s1.82-.815 1.82-1.82ZM13.21 10.925h2.415v1.006c0 .14.001.28.003.094.003.035.006.07.013.103a.324.324 0 0 0 .31.183c.114 0 .22-.035.31-.102l.001-.001.002-.002c.08-.073.266-.35.335-.814h1.225c-.07 1.015-.444 1.696-.865 2.097a1.624 1.624 0 0 1-1.103.446c-1.25 0-1.63-1.147-1.63-2.175v-.835h-1.021v5.415h-1.905v-5.415H9.902v-1.521H11.3v-.113c0-1.723.577-2.937 2.468-2.937a4.16 4.16 0 0 1 1.572.272l-.174 1.607a2.337 2.337 0 0 0-1.105-.272c-.906 0-1.242.377-1.242 1.282v.161h1.398v1.521h-.007Z" />
-                    </svg>
-                    LinkedIn Preview
-                  </h2>
-                  <LinkedInPreview post={results.linkedin_post} username={linkedinUsername} />
+              <div className="mt-8 flex items-center justify-center lg:justify-start gap-6">
+                <div className="flex -space-x-2">
+                  {["/user1.jpg", "/user2.jpg", "/user3.jpg", "/user4.jpg"].map((src, i) => (
+                    <img
+                      key={i}
+                      src={src}
+                      alt="User Avatar"
+                      className="w-13 h-13 rounded-full border-2 border-white object-cover"
+                    />
+                  ))}
                 </div>
-                <div className="space-y-2">
-                  <h2 className="text-lg font-semibold text-gray-800 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 mr-2">
-                      <path d="M23.643 4.937c-.835.37-1.732.62-2.675.733.962-.576 1.7-1.49 2.048-2.578-.9.534-1.897.922-2.958 1.13-.85-.904-2.06-1.47-3.4-1.47-2.572 0-4.658 2.086-4.658 4.66 0 .364.042.718.12 1.06-3.873-.195-7.304-2.05-9.602-4.868-.4.69-.63 1.49-.63 2.342 0 1.616.823 3.043 2.072 3.878-.764-.025-1.482-.234-2.11-.583v.06c0 2.257 1.605 4.14 3.737 4.568-.392.106-.803.162-1.227.162-.3 0-.593-.028-.877-.082.593 1.85 2.313 3.198 4.352 3.234-1.595 1.25-3.604 1.995-5.786 1.995-.376 0-.747-.022-1.112-.065 2.062 1.323 4.51 2.093 7.14 2.093 8.57 0 13.255-7.098 13.255-13.254 0-.2-.005-.402-.014-.602.91-.658 1.7-1.477 2.323-2.41z" />
-                    </svg>
-                    X Preview
-                  </h2>
-                  <XPreview post={results.x_post} username={xUsername} />
-                </div>
+                <p className="text-sm text-gray-600 pl-15">
+                  Trusted by AI enthusiasts, creators, and professionals worldwide. Be among the first to revolutionize content creation!
+                </p>
               </div>
-            )}
+            </motion.div>
+
+            {/* Preview Cards */}
+            <motion.div
+              className="flex-1 flex flex-col items-center md:items-start"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+            >
+              <div className="relative h-auto w-full flex flex-wrap gap-4 items-center justify-center md:justify-start">
+                {/* LinkedIn Post Preview */}
+                <motion.div
+                  className="w-full max-w-md bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200 
+                 sm:relative md:relative lg:absolute lg:-left-4 lg:-top-4"
+                  initial={{ rotate: -5 }}
+                  whileHover={{ rotate: 0, scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 10 }}
+                >
+                  <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 flex items-center gap-3">
+                    <FaLinkedin className="text-white text-2xl" />
+                    <span className="text-white font-bold">LinkedIn Post</span>
+                  </div>
+                  <div className="p-5 text-gray-800">
+                    <p className="text-sm mb-4">{samplePosts[0].content}</p>
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>❤️ {samplePosts[0].stats.likes} Likes</span>
+                      <span>💬 {samplePosts[0].stats.comments} Comments</span>
+                      <span>🔄 {samplePosts[0].stats.shares} Shares</span>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Twitter Post Preview */}
+                <motion.div
+                  className="w-full max-w-md bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200 
+                 sm:relative md:relative lg:absolute lg:-right-4 lg:top-24"
+                  initial={{ rotate: 5 }}
+                  whileHover={{ rotate: 0, scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 10 }}
+                >
+                  <div className="bg-black p-4 flex items-center gap-3">
+                    <FaTwitter className="text-white text-2xl" />
+                    <span className="text-white font-bold">X Post</span>
+                  </div>
+                  <div className="p-5 text-gray-800">
+                    <p className="text-sm mb-4">{samplePosts[1].content}</p>
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>❤️ {samplePosts[1].stats.likes}</span>
+                      <span>🔄 {samplePosts[1].stats.retweets}</span>
+                      <span>👁️ {samplePosts[1].stats.views} Views</span>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
           </div>
         </div>
-      </main>
+      </header>
+
+      {/* Partner Logos */}
+      <section className="py-12 border-t border-b border-gray-100">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-8">
+            <p className="text-gray-600 font-medium">Powered by cutting-edge AI technology from</p>
+          </div>
+          <div className="flex flex-wrap justify-center items-center gap-12">
+            <motion.div
+              className="flex flex-col items-center"
+              whileHover={{ scale: 1.05 }}
+            >
+              <img src="/GroqLogoSVG.svg" alt="Groq Logo" width={150} height={40} className="h-8 object-contain" />
+              <span className="text-sm text-gray-500 mt-2">Groq</span>
+            </motion.div>
+            <motion.div
+              className="flex flex-col items-center"
+              whileHover={{ scale: 1.05 }}
+            >
+              <img src="/AgnoLogoSVG.svg" alt="Agno AI Logo" width={150} height={40} className="h-8 object-contain" />
+              <span className="text-sm text-gray-500 mt-2">Agno AI</span>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 px-6 bg-blue-50">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl font-bold mb-4 text-gray-900">Why choose <span className="text-blue-600">Postmate</span>?</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">Generate platform-optimized content that engages your audience and drives real results - completely free.</p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                icon: <FaMagic className="text-3xl text-blue-600" />,
+                title: "AI-Powered Content",
+                description: "Generate engaging posts tailored to your brand voice and target audience in seconds."
+              },
+              {
+                icon: <FaRocket className="text-3xl text-blue-600" />,
+                title: "Multiple Platforms",
+                description: "Optimize content for LinkedIn and X with platform-specific formatting and style."
+              },
+              {
+                icon: <FaChartLine className="text-3xl text-blue-600" />,
+                title: "Performance Analytics",
+                description: "Track engagement and improve your content strategy with actionable insights."
+              }
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                className="bg-white rounded-xl p-6 border border-gray-200 shadow-lg hover:shadow-xl transition-all"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.2, duration: 0.8 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -5 }}
+              >
+                <div className="bg-blue-100 w-16 h-16 rounded-lg flex items-center justify-center mb-4">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-gray-900">{feature.title}</h3>
+                <p className="text-gray-600">{feature.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-6">
+        <motion.div
+          className="max-w-5xl mx-auto bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-12 text-center shadow-2xl"
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">Ready to transform your social media presence?</h2>
+          <p className="text-xl text-white opacity-90 mb-8 max-w-2xl mx-auto">
+            Join thousands of professionals who are saving time and increasing engagement with Postmate - absolutely free.
+          </p>
+          <motion.button
+            className="px-8 py-4 bg-white text-blue-700 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Link href="/signup" className="flex items-center justify-center gap-2">
+              Get Started Free
+              <FaArrowRight />
+            </Link>
+          </motion.button>
+          <p className="mt-4 text-sm text-white opacity-75">No credit card required. No paid plans. Just pure AI-powered productivity.</p>
+        </motion.div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-10 px-6 bg-gray-100">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div className="mb-6 md:mb-0">
+              <p className="text-2xl font-bold text-gray-900">Post<span className="text-blue-600">mate</span></p>
+              <p className="text-gray-600 text-sm">© 2025 Postmate. All rights reserved.</p>
+            </div>
+            <div className="flex gap-6">
+              <Link href="/privacy" className="text-sm text-gray-600 hover:text-blue-600">Privacy Policy</Link>
+              <Link href="/terms" className="text-sm text-gray-600 hover:text-blue-600">Terms of Service</Link>
+              <Link href="/contact" className="text-sm text-gray-600 hover:text-blue-600">Contact</Link>
+            </div>
+          </div>
+
+          <div className="pt-6 border-t border-gray-200 text-center text-gray-400 text-sm italic mt-8">
+            <p>"Built with 10% coding, 90% Ctrl+C & Ctrl+V, and 100% late-night debugging."</p>
+            <p className="mt-2 text-xs text-gray-500">Directed by Me(<a href="https://www.linkedin.com/in/vinay-adatiya">@Vinay_Adatiya</a>) & Implemented By Three Buddies ChatGPT , Claude and DeepSeek</p>
+            <p className="mt-2 text-xs text-gray-500">🔗 <a href="https://github.com/Vinay94278" className="text-blue-400 hover:underline">GitHub</a> | <a href="https://www.linkedin.com/in/vinay-adatiya" className="text-blue-400 hover:underline">LinkedIn</a></p>
+          </div>
+        </div>
+      </footer>
     </div>
-  )
+  );
 }

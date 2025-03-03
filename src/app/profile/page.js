@@ -64,7 +64,7 @@ export default function Profile() {
         await fetchAPIKeys(user.uid);
 
         setTimeout(() => {
-          router.push("/");  // Redirect after saving
+          router.push("/main");  // Redirect after saving
         }, 2000);
       } else {
         throw new Error(response.data.error);
@@ -84,10 +84,10 @@ export default function Profile() {
         <form onSubmit={handleSaveAPIKeys}>
           {/* Groq API Key Input */}
           <div className="mb-4 relative">
-            <label className="block text-sm font-medium text-gray-700">Groq API Key</label>
+            <label className="block text-sm font-medium">Groq API Key</label>
             <input
               type={showGroqKey ? "text" : "password"}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              className="w-full p-3 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               placeholder="Enter Groq API Key"
               value={groqApiKey}
               onChange={(e) => setGroqApiKey(e.target.value)}
@@ -103,10 +103,10 @@ export default function Profile() {
 
           {/* Phi Agno API Key Input */}
           <div className="mb-4 relative">
-            <label className="block text-sm font-medium text-gray-700">Phi Agno API Key</label>
+            <label className="block text-sm font-medium">Phi Agno API Key</label>
             <input
               type={showPhiKey ? "text" : "password"}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              className="w-full p-3 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               placeholder="Enter Phi Agno API Key"
               value={phiApiKey}
               onChange={(e) => setPhiApiKey(e.target.value)}
