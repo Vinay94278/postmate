@@ -24,7 +24,7 @@ body {
 }
 
 .prose {
-  color: #1f2937; /* gray-800 */
+  text-decoration-color: white;
 }
 
 .prose a {

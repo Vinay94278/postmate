@@ -42,3 +42,4 @@ next-env.d.ts
 
 # Virtual environment
 /backend/venv/
+/backend/firebase_admin.json
