@@ -25,7 +25,9 @@ CORS(app, supports_credentials=True)  # Allow all origins for simplicity
 encoded_key = os.getenv("FIREBASE_ADMIN_KEY")
 
 if not encoded_key:
-    raise ValueError("Missing Firebase credentials. Set FIREBASE_ADMIN_KEY in environment variables.")
+    raise ValueError(
+        "Missing Firebase credentials. Set FIREBASE_ADMIN_KEY in environment variables."
+    )
 
 # Decode the JSON string
 decoded_json = base64.b64decode(encoded_key).decode("utf-8")
@@ -83,10 +85,12 @@ def login():
 @app.route("/save-api-keys", methods=["POST", "OPTIONS"])  # ✅ Allow OPTIONS requests
 def save_api_keys():
     if request.method == "OPTIONS":
-        response = jsonify({"message": "Preflight request successful"})  
+        response = jsonify({"message": "Preflight request successful"})
         response.headers.add("Access-Control-Allow-Origin", "*")
-        response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")  
-        response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")  
+        response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+        response.headers.add(
+            "Access-Control-Allow-Headers", "Content-Type, Authorization"
+        )
         return response, 200  # ✅ Ensure the OPTIONS request gets a valid response
 
     try:
@@ -116,6 +120,7 @@ def save_api_keys():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 # ------------------------------------------
 # 🔹 GET USER PROFILE (Using User's API Keys)
 # ------------------------------------------
@@ -125,20 +130,32 @@ def get_profile():
         user_id = request.args.get("user_id")
 
         if not user_id:
-            return jsonify({"error": "Missing user_id parameter"}), 400  # 🚨 Ensure user_id is provided
+            return (
+                jsonify({"error": "Missing user_id parameter"}),
+                400,
+            )  # 🚨 Ensure user_id is provided
 
         user = UserAPIKeys.query.filter_by(user_id=user_id).first()
 
         if not user:
-            return jsonify({"groq_api_key": "", "phi_agno_api_key": ""}), 200  # ✅ Return empty keys instead of 400
+            return (
+                jsonify({"groq_api_key": "", "phi_agno_api_key": ""}),
+                200,
+            )  # ✅ Return empty keys instead of 400
 
-        return jsonify({
-            "groq_api_key": user.groq_api_key,
-            "phi_agno_api_key": user.phi_agno_api_key
-        }), 200
+        return (
+            jsonify(
+                {
+                    "groq_api_key": user.groq_api_key,
+                    "phi_agno_api_key": user.phi_agno_api_key,
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 # Add more robust parsing
 def parse_posts(content):
@@ -164,6 +181,7 @@ def parse_posts(content):
 
     return linkedin_post, x_post
 
+
 @app.errorhandler(404)
 def not_found(e):
     return jsonify(error=str(e)), 404
@@ -172,49 +190,6 @@ def not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return jsonify(error="Internal server error"), 500
-
-
-# Research Agent
-research_agent = Agent(
-    model=Groq(id="deepseek-r1-distill-llama-70b",api_key=groq_api_key),
-    tools=[
-        DuckDuckGo(),
-        Newspaper4k(),
-        WikipediaTools(),
-        ArxivToolkit(),
-        GoogleSearch(),
-    ],
-    description="AI research assistant specializing in AI and technology trends.",
-    instructions=[
-        "Search for the latest information on the given topic using available tools.",
-        "Extract key insights from articles, research papers, and Wikipedia.",
-        "Summarize the findings in a concise format for content creation.",
-    ],
-    markdown=True,
-    show_tool_calls=True,
-)
-
-# Content Creation Agent
-content_agent = Agent(
-    model=Groq(id="deepseek-r1-distill-llama-70b",api_key=groq_api_key),
-    description="Creative AI content writer specializing in LinkedIn and X posts.",
-    instructions=[
-        "First think through the post structure in <think> tags",
-        "Create two separate posts wrapped in MARKDOWN formatting:",
-        "For LinkedIn: Use ## LINKEDIN POST: as header",
-        "For X: Use ## X POST: as header",
-        "Include 3-5 relevant hashtags at the end of each post",
-        "Ensure proper spacing between paragraphs",
-        "Use emojis that match the content theme",
-        "Maintain professional tone for LinkedIn, casual for X",
-        "Use **bold** for emphasis and *italic* for subtle points",
-        "Separate sections with ---",
-        "Format hashtags like: #AI #Tech",
-        # "Never include markdown code blocks"
-    ],
-    markdown=True,
-    show_tool_calls=True,
-)
 
 
 @app.route("/")
@@ -231,11 +206,16 @@ def generate():
 
         if not topic:
             return jsonify({"error": "Topic is required"}), 400
-        
+
         # Fetch API keys from the database dynamically
         user = UserAPIKeys.query.filter_by(user_id=user_id).first()
         if not user or not user.groq_api_key:
-            return jsonify({"error": "User API key not found. Please add API keys in profile."}), 400
+            return (
+                jsonify(
+                    {"error": "User API key not found. Please add API keys in profile."}
+                ),
+                400,
+            )
 
         groq_api_key = user.groq_api_key
 
@@ -266,6 +246,47 @@ def generate():
             app.logger.error(f"Content generation failed: {str(content_error)}")
             return jsonify({"error": "Content creation failed"}), 500
 
+        # Research Agent
+        research_agent = Agent(
+            model=Groq(id="deepseek-r1-distill-llama-70b", api_key=groq_api_key),
+            tools=[
+                DuckDuckGo(),
+                Newspaper4k(),
+                WikipediaTools(),
+                ArxivToolkit(),
+                GoogleSearch(),
+            ],
+            description="AI research assistant specializing in AI and technology trends.",
+            instructions=[
+                "Search for the latest information on the given topic using available tools.",
+                "Extract key insights from articles, research papers, and Wikipedia.",
+                "Summarize the findings in a concise format for content creation.",
+            ],
+            markdown=True,
+            show_tool_calls=True,
+        )
+
+        # Content Creation Agent
+        content_agent = Agent(
+            model=Groq(id="deepseek-r1-distill-llama-70b", api_key=groq_api_key),
+            description="Creative AI content writer specializing in LinkedIn and X posts.",
+            instructions=[
+                "First think through the post structure in <think> tags",
+                "Create two separate posts wrapped in MARKDOWN formatting:",
+                "For LinkedIn: Use ## LINKEDIN POST: as header",
+                "For X: Use ## X POST: as header",
+                "Include 3-5 relevant hashtags at the end of each post",
+                "Ensure proper spacing between paragraphs",
+                "Use emojis that match the content theme",
+                "Maintain professional tone for LinkedIn, casual for X",
+                "Use **bold** for emphasis and *italic* for subtle points",
+                "Separate sections with ---",
+                "Format hashtags like: #AI #Tech",
+                # "Never include markdown code blocks"
+            ],
+            markdown=True,
+            show_tool_calls=True,
+        )
         # Parse the response to separate LinkedIn and X posts
         content = posts_response.content
         linkedin_post = ""
