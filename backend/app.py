@@ -219,33 +219,6 @@ def generate():
 
         groq_api_key = user.groq_api_key
 
-        # Research - with error handling
-        try:
-            research_summary: RunResponse = research_agent.run(
-                f"Find information about: {topic}"
-            )
-        except Exception as research_error:
-            app.logger.error(f"Research failed: {str(research_error)}")
-            return jsonify({"error": "Research phase failed"}), 500
-
-        try:
-            # Generate posts
-            posts_prompt = f"""
-            Based on this research: {research_summary.content}
-            
-            Create two posts:
-            1. A LinkedIn post (300-500 characters) that is professional yet engaging
-            2. An X post (max 280 characters) that is concise and attention-grabbing
-            
-            Include relevant hashtags for both platforms.
-            Format your response with clear 'LINKEDIN POST:' and 'X POST:' sections.
-            """
-
-            posts_response: RunResponse = content_agent.run(posts_prompt)
-        except Exception as content_error:
-            app.logger.error(f"Content generation failed: {str(content_error)}")
-            return jsonify({"error": "Content creation failed"}), 500
-
         # Research Agent
         research_agent = Agent(
             model=Groq(id="deepseek-r1-distill-llama-70b", api_key=groq_api_key),
@@ -287,6 +260,34 @@ def generate():
             markdown=True,
             show_tool_calls=True,
         )
+
+        # Research - with error handling
+        try:
+            research_summary: RunResponse = research_agent.run(
+                f"Find information about: {topic}"
+            )
+        except Exception as research_error:
+            app.logger.error(f"Research failed: {str(research_error)}")
+            return jsonify({"error": "Research phase failed"}), 500
+
+        try:
+            # Generate posts
+            posts_prompt = f"""
+            Based on this research: {research_summary.content}
+            
+            Create two posts:
+            1. A LinkedIn post (300-500 characters) that is professional yet engaging
+            2. An X post (max 280 characters) that is concise and attention-grabbing
+            
+            Include relevant hashtags for both platforms.
+            Format your response with clear 'LINKEDIN POST:' and 'X POST:' sections.
+            """
+
+            posts_response: RunResponse = content_agent.run(posts_prompt)
+        except Exception as content_error:
+            app.logger.error(f"Content generation failed: {str(content_error)}")
+            return jsonify({"error": "Content creation failed"}), 500
+
         # Parse the response to separate LinkedIn and X posts
         content = posts_response.content
         linkedin_post = ""
