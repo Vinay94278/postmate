@@ -2,7 +2,7 @@ export async function POST(request) {
   try {
     const { topic } = await request.json();  // Only get needed field
 
-    const backendResponse = await fetch('http://localhost:5000/generate', {
+    const backendResponse = await fetch('${process.env.NEXT_PUBLIC_API_BASE_URL}/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ topic }),
