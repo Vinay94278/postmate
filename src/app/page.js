@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from 'next/image';
 import { motion } from "framer-motion";
 import { FaLinkedin, FaTwitter, FaArrowRight, FaRocket, FaMagic, FaChartLine } from "react-icons/fa";
 
@@ -137,7 +138,7 @@ export default function LandingPage() {
               <div className="mt-8 flex items-center justify-center lg:justify-start gap-6">
                 <div className="flex -space-x-2">
                   {["/user1.jpg", "/user2.jpg", "/user3.jpg", "/user4.jpg"].map((src, i) => (
-                    <img
+                    <Image
                       key={i}
                       src={src}
                       alt="User Avatar"
@@ -219,14 +220,14 @@ export default function LandingPage() {
               className="flex flex-col items-center"
               whileHover={{ scale: 1.05 }}
             >
-              <img src="/GroqLogoSVG.svg" alt="Groq Logo" width={150} height={40} className="h-8 object-contain" />
+              <Image src="/GroqLogoSVG.svg" alt="Groq Logo" width={150} height={40} className="h-8 object-contain" />
               <span className="text-sm text-gray-500 mt-2">Groq</span>
             </motion.div>
             <motion.div
               className="flex flex-col items-center"
               whileHover={{ scale: 1.05 }}
             >
-              <img src="/AgnoLogoSVG.svg" alt="Agno AI Logo" width={150} height={40} className="h-8 object-contain" />
+              <Image src="/AgnoLogoSVG.svg" alt="Agno AI Logo" width={150} height={40} className="h-8 object-contain" />
               <span className="text-sm text-gray-500 mt-2">Agno AI</span>
             </motion.div>
           </div>
@@ -328,7 +329,7 @@ export default function LandingPage() {
           </div>
 
           <div className="pt-6 border-t border-gray-200 text-center text-gray-400 text-sm italic mt-8">
-            <p>"Built with 10% coding, 90% Ctrl+C & Ctrl+V, and 100% late-night debugging."</p>
+            <p>&quot;Built with 10% coding, 90% Ctrl+C & Ctrl+V, and 100% late-night debugging.&quot;</p>
             <p className="mt-2 text-xs text-gray-500">Directed by Me(<a href="https://www.linkedin.com/in/vinay-adatiya">@Vinay_Adatiya</a>) & Implemented By Three Buddies ChatGPT , Claude and DeepSeek</p>
             <p className="mt-2 text-xs text-gray-500">🔗 <a href="https://github.com/Vinay94278" className="text-blue-400 hover:underline">GitHub</a> | <a href="https://www.linkedin.com/in/vinay-adatiya" className="text-blue-400 hover:underline">LinkedIn</a></p>
           </div>

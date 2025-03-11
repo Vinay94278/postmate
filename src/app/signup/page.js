@@ -22,7 +22,7 @@ export default function Signup() {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       router.push("/profile");
-    } catch (err) {
+    } catch {
       setError("Error signing up. Try again.");
     } finally {
       setLoading(false);

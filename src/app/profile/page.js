@@ -1,6 +1,5 @@
 "use client";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { auth } from "@/firebase";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -15,32 +14,43 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
-        fetchAPIKeys(user.uid);
-      } else {
-        router.push("/login");
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+  // **Stable fetchAPIKeys Function**
+  const fetchAPIKeys = useCallback(async (userId) => {
+    if (!userId) return; // ✅ Prevent unnecessary API calls if userId is null
 
-  const fetchAPIKeys = async (userId) => {
     try {
       const response = await axios.get(`http://localhost:5000/profile?user_id=${userId}`);
-
       if (response.status === 200) {
-        setGroqApiKey(response.data.groq_api_key || "");
-        setPhiApiKey(response.data.phi_agno_api_key || "");
+        setApiKeys(response.data);
+
+        // ✅ Redirect only if API keys are missing
+        if (!response.data.groq_api_key || !response.data.phi_agno_api_key) {
+          console.warn("API keys are missing. Redirecting to profile page.");
+          router.push("/profile");
+        } else {
+          console.log("API Keys loaded successfully.");
+        }
       } else {
         console.error("User API keys not found");
       }
     } catch (error) {
       console.error("Failed to fetch API keys", error);
     }
-  };
+  }, [router]); // ✅ Only `router` as a dependency
+
+  // **Check if user is logged in**
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUser(user);
+        fetchAPIKeys(user.uid); // ✅ Function is now stable
+      } else {
+        router.push("/login"); // Redirect to login if not authenticated
+      }
+    });
+
+    return () => unsubscribe();
+  }, [fetchAPIKeys, router]);
 
   const handleSaveAPIKeys = async (e) => {
     e.preventDefault();

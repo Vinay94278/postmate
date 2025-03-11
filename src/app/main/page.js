@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { LinkedInPreview, XPreview } from '@/components/PostPreviews';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm'
 import { auth } from "@/firebase"; // Firebase auth
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { parseAgentContent } from '@/utils/parseAgentContent';
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -20,33 +19,20 @@ export default function Home() {
   const [apiKeys, setApiKeys] = useState({ groq_api_key: "", phi_agno_api_key: "" });
 
   const router = useRouter();
-  // **Check if user is logged in**
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
-        fetchAPIKeys(user.uid);
-      } else {
-        router.push("/login"); // Redirect to login if not authenticated
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-
   // **Fetch API Keys from Backend**
-  const fetchAPIKeys = async (userId) => {
+  const fetchAPIKeys = useCallback(async (userId) => {
     try {
       const response = await axios.get(`http://localhost:5000/profile?user_id=${userId}`);
-  
+
       if (response.status === 200) {
         setApiKeys(response.data);
-  
+
         // ✅ Redirect only if API keys exist
-        if (response.data.groq_api_key && response.data.phi_agno_api_key) {
-          console.log("API Keys loaded successfully.");
-        } else {
+        if (!response.data.groq_api_key || !response.data.phi_agno_api_key) {
           console.warn("API keys are missing. Redirecting to profile page.");
           router.push("/profile");
+        } else {
+          console.log("API Keys loaded successfully.");
         }
       } else {
         console.error("User API keys not found");
@@ -54,30 +40,43 @@ export default function Home() {
     } catch (error) {
       console.error("Failed to fetch API keys", error);
     }
-  };
-  
+  }, [router]); // ✅ Ensure router is a dependency of useCallback
+
+  // **Check if user is logged in**
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUser(user);
+        fetchAPIKeys(user.uid); // ✅ Now fetchAPIKeys is stable
+      } else {
+        router.push("/login"); // Redirect to login if not authenticated
+      }
+    });
+    return () => unsubscribe();
+  }, [fetchAPIKeys, router]); // ✅ No more warning
+
   // **Handle Content Generation**
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     if (!user) {
       alert("You must be logged in to generate content.");
       return;
     }
-  
+
     if (!apiKeys.groq_api_key || !apiKeys.phi_agno_api_key) {
       alert("Please enter API keys in your profile first.");
       router.push("/profile");
       return;
     }
-  
+
     try {
       const response = await axios.post("http://localhost:5000/generate", {
         user_id: user.uid,
         topic,
       });
-  
+
       if (!response.data) throw new Error("Failed to generate posts");
       setResults(response.data);
       setActiveTab("preview");
@@ -204,16 +203,16 @@ export default function Home() {
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     components={{
-                      strong: ({ node, ...props }) => (
+                      strong: ({ ...props }) => (
                         <strong className="font-semibold text-gray-900" {...props} />
                       ),
-                      em: ({ node, ...props }) => (
+                      em: ({ ...props }) => (
                         <em className="italic text-gray-700" {...props} />
                       ),
-                      a: ({ node, ...props }) => (
+                      a: ({ ...props }) => (
                         <a className="text-blue-600 hover:underline" {...props} />
                       ),
-                      p: ({ node, ...props }) => (
+                      p: ({ ...props }) => (
                         <p className="mb-4 leading-relaxed" {...props} />
                       )
                     }}
