@@ -22,7 +22,7 @@ export default function Home() {
   // **Fetch API Keys from Backend**
   const fetchAPIKeys = useCallback(async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/profile?user_id=${userId}`);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/profile?user_id=${userId}`);
 
       if (response.status === 200) {
         setApiKeys(response.data);

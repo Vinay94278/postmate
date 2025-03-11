@@ -142,6 +142,8 @@ export default function LandingPage() {
                       key={i}
                       src={src}
                       alt="User Avatar"
+                      width={20}
+                      height={20}
                       className="w-13 h-13 rounded-full border-2 border-white object-cover"
                     />
                   ))}

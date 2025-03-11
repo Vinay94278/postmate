@@ -13,7 +13,6 @@ from phi.tools.googlesearch import GoogleSearch
 from phi.tools.arxiv_toolkit import ArxivToolkit
 import firebase_admin
 from firebase_admin import auth, credentials
-import requests
 import json
 import base64
 from flask_sqlalchemy import SQLAlchemy
@@ -177,7 +176,7 @@ def server_error(e):
 
 # Research Agent
 research_agent = Agent(
-    model=Groq(id="deepseek-r1-distill-llama-70b"),
+    model=Groq(id="deepseek-r1-distill-llama-70b",api_key=groq_api_key),
     tools=[
         DuckDuckGo(),
         Newspaper4k(),
@@ -197,7 +196,7 @@ research_agent = Agent(
 
 # Content Creation Agent
 content_agent = Agent(
-    model=Groq(id="deepseek-r1-distill-llama-70b"),
+    model=Groq(id="deepseek-r1-distill-llama-70b",api_key=groq_api_key),
     description="Creative AI content writer specializing in LinkedIn and X posts.",
     instructions=[
         "First think through the post structure in <think> tags",
@@ -228,9 +227,17 @@ def generate():
     try:
         data = request.json
         topic = data.get("topic", "latest trends in AI")
+        user_id = data.get("user_id")
 
         if not topic:
             return jsonify({"error": "Topic is required"}), 400
+        
+        # Fetch API keys from the database dynamically
+        user = UserAPIKeys.query.filter_by(user_id=user_id).first()
+        if not user or not user.groq_api_key:
+            return jsonify({"error": "User API key not found. Please add API keys in profile."}), 400
+
+        groq_api_key = user.groq_api_key
 
         # Research - with error handling
         try:

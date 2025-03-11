@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 
 export default function Profile() {
+  const [apiKeys, setApiKeys] = useState({ groq_api_key: "", phi_agno_api_key: "" });
   const [groqApiKey, setGroqApiKey] = useState("");
   const [phiApiKey, setPhiApiKey] = useState("");
   const [message, setMessage] = useState("");
@@ -19,7 +20,7 @@ export default function Profile() {
     if (!userId) return; // ✅ Prevent unnecessary API calls if userId is null
 
     try {
-      const response = await axios.get(`http://localhost:5000/profile?user_id=${userId}`);
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/profile?user_id=${userId}`);
       if (response.status === 200) {
         setApiKeys(response.data);
 
@@ -36,14 +37,14 @@ export default function Profile() {
     } catch (error) {
       console.error("Failed to fetch API keys", error);
     }
-  }, [router]); // ✅ Only `router` as a dependency
+  }, [router]);
 
   // **Check if user is logged in**
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setUser(user);
-        fetchAPIKeys(user.uid); // ✅ Function is now stable
+        fetchAPIKeys(user.uid);
       } else {
         router.push("/login"); // Redirect to login if not authenticated
       }
@@ -63,7 +64,7 @@ export default function Profile() {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/save-api-keys", {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/save-api-keys`, {
         user_id: user.uid,
         groq_api_key: groqApiKey,
         phi_agno_api_key: phiApiKey,
