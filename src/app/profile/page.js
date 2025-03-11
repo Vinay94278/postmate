@@ -80,11 +80,11 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Profile</h2>
+        <h2 className="text-xl font-semibold text-black mb-4">Profile</h2>
         <form onSubmit={handleSaveAPIKeys}>
           {/* Groq API Key Input */}
           <div className="mb-4 relative">
-            <label className="block text-sm font-medium">Groq API Key</label>
+            <label className="block text-sm text-black font-medium">Groq API Key</label>
             <input
               type={showGroqKey ? "text" : "password"}
               className="w-full p-3 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
@@ -103,7 +103,7 @@ export default function Profile() {
 
           {/* Phi Agno API Key Input */}
           <div className="mb-4 relative">
-            <label className="block text-sm font-medium">Phi Agno API Key</label>
+            <label className="block text-sm text-black font-medium">Phi Agno API Key</label>
             <input
               type={showPhiKey ? "text" : "password"}
               className="w-full p-3 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
