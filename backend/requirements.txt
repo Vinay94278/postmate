@@ -16,3 +16,4 @@ flask
 flask-cors
 gunicorn
 firebase-admin
+flask_sqlalchemy
