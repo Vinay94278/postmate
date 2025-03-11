@@ -5,8 +5,11 @@ export async function POST(request) {
     const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ topic }),
-      cache: 'no-store',  // 🚀 Prevent caching issues
+      body: JSON.stringify({ 
+        user_id: user?.uid,
+        topic: topic
+      }),
+      cache: 'no-store',
     });
 
     if (!backendResponse.ok) {
