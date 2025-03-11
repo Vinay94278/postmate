@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 
 export default function Profile() {
-  const [apiKeys, setApiKeys] = useState({ groq_api_key: "", phi_agno_api_key: "" });
+  // const [apiKeys, setApiKeys] = useState({ groq_api_key: "", phi_agno_api_key: "" });
   const [groqApiKey, setGroqApiKey] = useState("");
   const [phiApiKey, setPhiApiKey] = useState("");
   const [message, setMessage] = useState("");
@@ -17,20 +17,13 @@ export default function Profile() {
 
   // **Stable fetchAPIKeys Function**
   const fetchAPIKeys = useCallback(async (userId) => {
-    if (!userId) return; // ✅ Prevent unnecessary API calls if userId is null
+    if (!userId) return;
 
     try {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/profile?user_id=${userId}`);
       if (response.status === 200) {
-        setApiKeys(response.data);
-
-        // ✅ Redirect only if API keys are missing
-        if (!response.data.groq_api_key || !response.data.phi_agno_api_key) {
-          console.warn("API keys are missing. Redirecting to profile page.");
-          router.push("/profile");
-        } else {
-          console.log("API Keys loaded successfully.");
-        }
+        setGroqApiKey(response.data.groq_api_key || "");
+        setPhiApiKey(response.data.phi_agno_api_key || "");
       } else {
         console.error("User API keys not found");
       }
@@ -38,7 +31,7 @@ export default function Profile() {
       console.error("Failed to fetch API keys", error);
     }
   }, [router]);
-
+  
   // **Check if user is logged in**
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
