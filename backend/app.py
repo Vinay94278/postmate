@@ -1,5 +1,6 @@
 # Update the Flask CORS configuration and add error handling
 import re  # Add at the top
+import os
 from typing import Optional  # Add if needed
 from flask import Flask, request, jsonify
 from flask_cors import CORS  # Add CORS support for cross-origin requests
@@ -13,18 +14,29 @@ from phi.tools.arxiv_toolkit import ArxivToolkit
 import firebase_admin
 from firebase_admin import auth, credentials
 import requests
+import json
+import base64
 from flask_sqlalchemy import SQLAlchemy
 
 # Initialize Flask App
 app = Flask(__name__)
 CORS(app, supports_credentials=True)  # Allow all origins for simplicity
 
+# Read the base64-encoded JSON from environment variable
+encoded_key = os.getenv("FIREBASE_ADMIN_KEY")
 
-# Load Firebase Credentials
-cred = credentials.Certificate(
-    "backend/firebase_admin.json"
-)  # Place this file in backend/
-firebase_admin.initialize_app(cred)
+if not encoded_key:
+    raise ValueError("Missing Firebase credentials. Set FIREBASE_ADMIN_KEY in environment variables.")
+
+# Decode the JSON string
+decoded_json = base64.b64decode(encoded_key).decode("utf-8")
+
+# Convert string to dictionary
+firebase_credentials = json.loads(decoded_json)
+
+# Initialize Firebase Admin SDK
+cred = credentials.Certificate(firebase_credentials)
+firebase_app = firebase_admin.initialize_app(cred)
 
 # Configure SQLite for storing user API keys (optional)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
