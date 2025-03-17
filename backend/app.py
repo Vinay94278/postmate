@@ -130,18 +130,28 @@ def get_profile():
         user_id = request.args.get("user_id")
 
         if not user_id:
-            return jsonify({"error": "Missing user_id parameter"}), 400
+            return (
+                jsonify({"error": "Missing user_id parameter"}),
+                400,
+            )  # 🚨 Ensure user_id is provided
 
         user = UserAPIKeys.query.filter_by(user_id=user_id).first()
 
         if not user:
-            return jsonify({"exists": False, "groq_api_key": "", "phi_agno_api_key": ""}), 200  
+            return (
+                jsonify({"groq_api_key": "", "phi_agno_api_key": ""}),
+                200,
+            )  # ✅ Return empty keys instead of 400
 
-        return jsonify({
-            "exists": True,  
-            "groq_api_key": user.groq_api_key,
-            "phi_agno_api_key": user.phi_agno_api_key
-        }), 200
+        return (
+            jsonify(
+                {
+                    "groq_api_key": user.groq_api_key,
+                    "phi_agno_api_key": user.phi_agno_api_key,
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
